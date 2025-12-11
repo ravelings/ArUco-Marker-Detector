@@ -1,7 +1,12 @@
-import cv2 as cv 
-import numpy as np 
-from Packages.videocapture import VideoCapture
+from Packages.calibrator import Calibrate
 
-def main() -> int: 
+def main() -> None:
+    file_path = 'images'
+    diemension = (7,7)
+    calibrate = Calibrate(board_diemension=diemension, folder_path=file_path)  
+    calibrate.calibrateMatrix()
+    print(f'Matrix: {calibrate.matrix}')
     
-    capture = VideoCapture(0)
+    print("Program ended")
+    
+main()

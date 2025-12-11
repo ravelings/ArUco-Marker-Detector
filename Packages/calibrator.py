@@ -1,19 +1,22 @@
 import cv2 as cv 
 import numpy as np
-import os 
+import os  
+import glob as glob
 import threading
 
 class Calibrate():
     def __init__(self, board_diemension, folder_path=None, capture=None):
         # prelim
-        self.capture = capture # for drawCorners()
+        self.capture    = capture # for drawCorners()
         self.folder_path = folder_path
         self.diemension = np.array(board_diemension, dtype=np.uint8)
         self.criteria   = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-        self.canvas = None
+        self.canvas     = None
+        self.image      = None
         # cam matrix
+        self.ret        = False
         self.matrix     = None
-        self.rot_cof    = None
+        self.dist_cof   = None
         self.rot_vec    = None
         self.trans_vec  = None 
         # init obj and img points
@@ -46,16 +49,31 @@ class Calibrate():
             return ret, corners
 
     def calibrateMatrix(self):
-        for file in os.listdir(self.folder_path): # loop through folder
-            image = cv.imread(file, cv.IMREAD_GRAYSCALE) # read image as gray
-            ret, corners = self.findCorners(image)
+        file = glob.glob(f'{self.folder_path}/*.jpeg')
+        print(f'Working path: {os.getcwd()}')
+        for image in file: # loop through folder
+            read = cv.imread(image, cv.IMREAD_UNCHANGED)# read image as gray
+            print(f'file: {image}')
+            cv.waitKey(100)
+            ret, corners = self.findCorners(read)
             if ret == True:
                 self.objpoints.append(self.objp)
                 
-                corners2 = cv.findChessboardCorners(image,corners,(self.diemension[0],self.diemension[1]), None) 
-                self.imgpoints.append(corners2)
+                self.imgpoints.append(corners)
+                
+            else:
+                print(f"Error in file: {self.folder_path}/{file} ") 
+                break
         else:
             print("All points stored.")
+            image2 = (cv.imread(file[0], cv.IMREAD_GRAYSCALE))
+            ret, self.matrix, self.dist_cof, self.rot_vec, self.trans_vec = cv.calibrateCamera(
+                self.objpoints,
+                self.imgpoints,
+                image2.shape[::-1],
+                None,
+                None
+        )
         
     def drawCorners(self):
         while not self.stopped:
