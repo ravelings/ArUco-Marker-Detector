@@ -73,6 +73,7 @@ class Calibrate():
                 image2.shape[::-1],
                 None,
                 None
+            self.ret = ret
         )
         
     def drawCorners(self):
