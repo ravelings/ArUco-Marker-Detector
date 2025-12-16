@@ -5,7 +5,7 @@ import glob as glob
 import threading
 
 class Calibrate():
-    def __init__(self, board_diemension, folder_path=None, capture=None):
+    def __init__(self, board_diemension, folder_path, capture=None):
         # prelim
         self.capture    = capture # for drawCorners()
         self.folder_path = folder_path
@@ -14,7 +14,7 @@ class Calibrate():
         self.canvas     = None
         self.image      = None
         # cam matrix
-        self.ret        = False
+        self.ret        = None
         self.matrix     = None
         self.dist_cof   = None
         self.rot_vec    = None
@@ -50,7 +50,7 @@ class Calibrate():
 
     def calibrateMatrix(self):
         file = glob.glob(f'{self.folder_path}/*.jpeg')
-        print(f'Working path: {os.getcwd()}')
+        #print(f'Working path: {os.getcwd()}')
         for image in file: # loop through folder
             read = cv.imread(image, cv.IMREAD_UNCHANGED)# read image as gray
             print(f'file: {image}')
@@ -73,8 +73,9 @@ class Calibrate():
                 image2.shape[::-1],
                 None,
                 None
+                )
+            print("Return is: ", ret)
             self.ret = ret
-        )
         
     def drawCorners(self):
         while not self.stopped:

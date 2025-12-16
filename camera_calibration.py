@@ -9,4 +9,5 @@ def main() -> None:
     
     print("Program ended")
     
-main()
+if __name__ == "__main__":
+    main()

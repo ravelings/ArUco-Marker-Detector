@@ -1,5 +1,7 @@
 import cv2 as cv 
 from cv2 import aruco as aruco
+from Packages.videocapture import VideoCapture
+
 
 def getMarker(image):
     dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
@@ -7,6 +9,7 @@ def getMarker(image):
     detector = aruco.ArucoDetector(dict, param)
     
     corners, ids, _ = detector.detectMarkers(image)
+    
     
     if ids is not None:
         print("Detection successful")
